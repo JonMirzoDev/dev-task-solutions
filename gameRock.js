@@ -1,5 +1,6 @@
 const crypto = require('crypto')
 const readline = require('readline')
+const AsciiTable = require('ascii-table')
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -36,29 +37,23 @@ function determineWinner(moves, playerMoveIndex, computerMoveIndex) {
 }
 
 function printHelpTable(moves) {
-  let helpTable =
-    '    ' +
-    moves.map((move, index) => `${index + 1}-${move}`).join('    ') +
-    '\n'
+  let table = new AsciiTable()
+  table.setHeading('', ...moves)
 
   moves.forEach((move, i) => {
-    let row = `${i + 1}-${move} `
+    let row = [`${i + 1}-${move}`]
     moves.forEach((_, j) => {
       if (i === j) {
-        row += ' Draw  '
+        row.push('Draw')
       } else {
         const result = determineWinner(moves, i, j)
-        if (result === 'Player wins') {
-          row += ' Win   '
-        } else {
-          row += ' Lose  '
-        }
+        row.push(result === 'Player wins' ? 'Win' : 'Lose')
       }
     })
-    helpTable += row + '\n'
+    table.addRow(...row)
   })
 
-  console.log(helpTable)
+  console.log(table.toString())
 }
 
 function promptUserMove(moves, key, computerMoveIndex) {
